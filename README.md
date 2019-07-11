@@ -4,6 +4,8 @@ scACE
 
 Single-Cell chromatin Accessibility and gene Expression-based Clustering. A model-based approach that is specifically designed for single-cell genomic data and can jointly cluster single-cell chromatin accessibility and single-cell gene expression data.
 
+![](https://github.com/WWJiaxuan/scACE/blob/master/scACE_pic.jpg)
+
 Installation
 ------------
 
