@@ -1,0 +1,107 @@
+---
+title: "A quick guide to scACE"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A quick guide to scACE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1, Installation
+Using the following command to install scACE:
+
+``` r
+library(devtools)
+devtools::install_github("WWJiaxuan/scACE")
+```
+
+## 2, Example 
+A breif illustration to the two main functions.
+
+### 2.1 `getClusterGibbs` 
+Perform clustering on the dataset `LZX_data`, which contains 314 chromatin accessibility data and 96 gene expression data. 1000 features are used, in which first 500 features are linked.
+
+```{r}
+library(mixtools)
+library(label.switching)
+library(scACE)
+library(NMF)
+
+fulldata <- LZX_data
+data_acc <- fulldata$data_acc
+data_exp <- fulldata$data_exp
+overlap_seq_acc <- fulldata$overlap_seq_acc
+overlap_seq_exp <- fulldata$overlap_seq_exp
+acc_true_cluster <- fulldata$acc_true_cluster
+exp_true_cluster <- fulldata$exp_true_cluster
+result <- getClusterGibbs(data_acc=data_acc, data_exp=data_exp, 
+                          overlap_seq_acc=overlap_seq_acc, 
+                          overlap_seq_exp=overlap_seq_exp,nCluster=2,niter=1000)
+```
+
+Clustering result can also be summarized.
+```{r}
+acclb <- result$cluster_acc
+explb <- result$cluster_exp
+lb <- c(acclb,explb)
+true_cluster <- c(acc_true_cluster,exp_true_cluster)
+# contingency table
+table(true_cluster,lb)
+# purity for measuring accuracy
+purity(as.factor(lb),as.factor(true_cluster))
+
+```
+
+
+### 2.2 `simData`
+Simulate both single-cell chromatin accessibility and single-cell gene expression data for 2 clusters by model-based approach.
+```{r}
+library(scACE)
+n1 <- 100
+n2 <- 100
+p <- 100
+Xprobs <- c(0.5, 0.5)
+muG1 <- c(0, 2)
+sigmaG1 <- c(0.8, 0.8)
+muG2 <- c(0, 2)
+sigmaG2 <- c(0.8, 0.8)
+overlap_prop <- 0.8
+diff_prop <- 0.2
+diff_prop_atac <- 0.001
+diff_prop_rna <- 0.001
+
+mu0 <- 0.5
+mu1 <- 0.5
+nu0 <- 2
+nu1 <- 10
+q_acc <- rep(0.5, n1)
+q_exp <- rep(0.5, n2)
+pi_exp <- rbind(rep(0.7, n2), 0.1)
+
+simdata <- simData(n1=n1, n2=n2, p=p, Xprobs=Xprobs, 
+                    muG1=muG1, sigmaG1=sigmaG1, muG2=muG2, sigmaG2=sigmaG2,
+                    mu0=mu0, mu1=mu1, nu0=nu0, nu1=nu1, 
+                    q_acc=q_acc, q_exp=q_exp, pi_exp=pi_exp,            
+                    overlap_prop=overlap_prop, diff_prop=diff_prop, 
+                    diff_prop_atac=diff_prop_atac, 
+                    diff_prop_rna=diff_prop_rna, cutoff=10^-6, 
+                    high1=0.8, low1=0.2, high2=0.8, low2=0.2)
+
+# the simulated dataset
+data_acc <- simdata$Data_atac
+data_exp <- simdata$Data_rna
+# the simulated cluster assignment
+acc_true_cluster <- simdata$cluster_atac
+exp_true_cluster <- simdata$cluster_rna
+# linked features
+overlap_seq_acc <- seq(1:(p*overlap_prop))
+overlap_seq_exp <- seq(1:(p*overlap_prop))
+
+```
+
+## 3, Reference
+Lin Z, Zamanighomi M, Daley T, Ma S and Wong WH(2019). "Model-based approach to the joint analysis of single-cell data on chromatin accessibility and gene expression." Statistical Science.
