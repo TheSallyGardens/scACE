@@ -13,7 +13,7 @@ You can install the released version of scACE from Github:
 
 ``` r
 library(devtools)
-devtools::install_github("WWJiaxuan/scACE")
+devtools::install_github("cuhklinlab/scACE")
 ```
 
 Main Functions
