@@ -16,7 +16,7 @@ Using the following command to install scACE:
 
 ``` r
 library(devtools)
-devtools::install_github("WWJiaxuan/scACE")
+devtools::install_github("cuhklinlab/scACE")
 ```
 
 ## 2, Example 
