@@ -19,7 +19,7 @@ devtools::install_github("cuhklinlab/scACE")
 Main Functions
 --------------
 
-`getClusterGibbs`: Perform model-based clustering algorithm on single-cell genomic data, jointly clustering single-cell chromatin accessibility and single-cell gene expression data.
+`getClusterGibbs`: Perform model-based clustering algorithm on single-cell genomic data using Markov Chain Monte Carlo (MCMC), jointly clustering single-cell chromatin accessibility and single-cell gene expression data.
 
 `update_all2`: Perform model-based clustering algorithm on single-cell genomic data using expectation–maximization (EM) algorithm, jointly clustering sc-ATAC and sc-RNA data.
 
