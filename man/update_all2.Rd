@@ -81,7 +81,8 @@ f1 <- (LZX_data$data_acc!=0) + 0
 f0 <- 1 - f1
 
 # g1 and g0
-data_exp_non0 <- data_exp[which(LZX_data$data_exp!=0)]
+data_exp <- LZX_data$data_exp
+data_exp_non0 <- data_exp[which(data_exp!=0)]
 if (length(data_exp_non0)>50000){
   data_exp_non0 <- sample(data_exp_non0, 50000)
 }
@@ -99,7 +100,7 @@ phi_atac <- c(1/k0,1/k0)
 phi_rna <- c(1/k0,1/k0)
 phi_1 <- 10
 
-w_acc <- (rep(0.5,k0*p0),k0,p0)
+w_acc <- matrix(rep(0.5,k0*p0),k0,p0)
 w_exp <- matrix(runif(k0*p0,min=0.2,max=0.8),k0,p0)
 pi_exp <- matrix(c(rep(0.6,l0),rep(0.1,l0)),k0,l0,byrow=TRUE)
 qi<-rep(0.5,i0)
@@ -118,6 +119,6 @@ for(i in c(1:niter)){
                     phi_rna=temp$phi_rna,g1=g1,g0=g0,w_exp=temp$w_exp,pi_exp=temp$pi_exp,
                     qi=temp$qi,ql=temp$ql,phi_1=temp$phi_1,po=po)
   postprob <- c(postprob,temp$postprob)
-  print(c(i,temp$postprob))
+  print(i)
 }
 }
