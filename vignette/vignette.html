@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>A quick guide to scACE</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A quick guide to scACE</h1>
+
+
+
+<div id="installation" class="section level2">
+<h2>1, Installation</h2>
+<p>Using the following command to install scACE:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(devtools)
+devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;cuhklinlab/scACE&quot;</span>)</code></pre></div>
+</div>
+<div id="example" class="section level2">
+<h2>2, Example</h2>
+<p>A breif illustration to the three main functions.</p>
+<div id="getclustergibbs" class="section level3">
+<h3>2.1 <code>getClusterGibbs</code></h3>
+<p>Perform clustering on the dataset <code>LZX_data</code> using MCMC, which contains 314 chromatin accessibility data and 96 gene expression data. 1000 features are used, in which first 500 features are linked.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mixtools)</code></pre></div>
+<pre><code>## Warning: package 'mixtools' was built under R version 3.5.3</code></pre>
+<pre><code>## mixtools package, version 1.1.0, Released 2017-03-10
+## This package is based upon work supported by the National Science Foundation under Grant No. SES-0518772.</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(label.switching)</code></pre></div>
+<pre><code>## Warning: package 'label.switching' was built under R version 3.5.3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(scACE)
+<span class="kw">library</span>(NMF)</code></pre></div>
+<pre><code>## Warning: package 'NMF' was built under R version 3.5.1</code></pre>
+<pre><code>## Loading required package: pkgmaker</code></pre>
+<pre><code>## Warning: package 'pkgmaker' was built under R version 3.5.3</code></pre>
+<pre><code>## Loading required package: registry</code></pre>
+<pre><code>## Warning: package 'registry' was built under R version 3.5.2</code></pre>
+<pre><code>## 
+## Attaching package: 'pkgmaker'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     isFALSE</code></pre>
+<pre><code>## Loading required package: rngtools</code></pre>
+<pre><code>## Warning: package 'rngtools' was built under R version 3.5.1</code></pre>
+<pre><code>## Loading required package: cluster</code></pre>
+<pre><code>## NMF - BioConductor layer [OK] | Shared memory capabilities [NO: windows] | Cores 7/8</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fulldata &lt;-<span class="st"> </span>LZX_data
+data_acc &lt;-<span class="st"> </span>fulldata<span class="op">$</span>data_acc
+data_exp &lt;-<span class="st"> </span>fulldata<span class="op">$</span>data_exp
+overlap_seq_acc &lt;-<span class="st"> </span>fulldata<span class="op">$</span>overlap_seq_acc
+overlap_seq_exp &lt;-<span class="st"> </span>fulldata<span class="op">$</span>overlap_seq_exp
+acc_true_cluster &lt;-<span class="st"> </span>fulldata<span class="op">$</span>acc_true_cluster
+exp_true_cluster &lt;-<span class="st"> </span>fulldata<span class="op">$</span>exp_true_cluster
+result &lt;-<span class="st"> </span><span class="kw">getClusterGibbs</span>(<span class="dt">data_acc=</span>data_acc, <span class="dt">data_exp=</span>data_exp, 
+                          <span class="dt">overlap_seq_acc=</span>overlap_seq_acc, 
+                          <span class="dt">overlap_seq_exp=</span>overlap_seq_exp,<span class="dt">nCluster=</span><span class="dv">2</span>,<span class="dt">niter=</span><span class="dv">1000</span>)</code></pre></div>
+<pre><code>## 
+##  Estimating mixture distribution 
+## number of iterations= 36 
+## 
+##  The mixture components for scRNA-Seq 
+##          comp.1     comp.2
+## alpha 2.4999548 18.7851051
+## beta  0.7495832  0.2632762
+## 
+##  MCMC: 
+## 
+ 10 % completed 
+## 
+ 20 % completed 
+## 
+ 30 % completed 
+## 
+ 40 % completed 
+## 
+ 50 % completed 
+## 
+ 60 % completed 
+## 
+ 70 % completed 
+## 
+ 80 % completed 
+## 
+ 90 % completed 
+## 
+ 100 % completed</code></pre>
+<p>Clustering result can also be summarized.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">acclb &lt;-<span class="st"> </span>result<span class="op">$</span>cluster_acc
+explb &lt;-<span class="st"> </span>result<span class="op">$</span>cluster_exp
+
+<span class="co"># ATAC</span>
+<span class="kw">table</span>(acc_true_cluster,acclb) <span class="co"># contingency table</span></code></pre></div>
+<pre><code>##                 acclb
+## acc_true_cluster   1   2
+##                1 222   1
+##                2   0  91</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">purity</span>(<span class="kw">as.factor</span>(acclb),<span class="kw">as.factor</span>(acc_true_cluster)) <span class="co"># purity for measuring accuracy</span></code></pre></div>
+<pre><code>## [1] 0.9968153</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNA</span>
+<span class="kw">table</span>(exp_true_cluster,explb)</code></pre></div>
+<pre><code>##                 explb
+## exp_true_cluster  1  2
+##                1 42  0
+##                2  0 54</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">purity</span>(<span class="kw">as.factor</span>(explb),<span class="kw">as.factor</span>(exp_true_cluster)) <span class="co"># purity for measuring accuracy</span></code></pre></div>
+<pre><code>## [1] 1</code></pre>
+</div>
+<div id="update_all2" class="section level3">
+<h3>2.2 <code>update_all2</code></h3>
+<p>Perform clustering on the dataset <code>LZX_data</code> using EM algorithm, which contains 314 chromatin accessibility data and 96 gene expression data. 1000 features are used, in which first 500 features are linked.</p>
+<div id="a-run-k-medoids-to-have-a-quick-clustering-on-the-dataset" class="section level4">
+<h4>(a) Run K-medoids to have a quick clustering on the dataset</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(WeightedCluster)</code></pre></div>
+<pre><code>## Warning: package 'WeightedCluster' was built under R version 3.5.3</code></pre>
+<pre><code>## Loading required package: TraMineR</code></pre>
+<pre><code>## Warning: package 'TraMineR' was built under R version 3.5.3</code></pre>
+<pre><code>## 
+## TraMineR stable version 2.0-11.1 (Built: 2019-04-04)</code></pre>
+<pre><code>## Website: http://traminer.unige.ch</code></pre>
+<pre><code>## Please type 'citation(&quot;TraMineR&quot;)' for citation information.</code></pre>
+<pre><code>## This is WeightedCluster stable version 1.4 (Built: 2019-04-04)</code></pre>
+<pre><code>## 
+## To get the manuals, please run:</code></pre>
+<pre><code>##    vignette(&quot;WeightedCluster&quot;) ## Complete manual in English</code></pre>
+<pre><code>##    vignette(&quot;WeightedClusterFR&quot;) ## Complete manual in French</code></pre>
+<pre><code>##    vignette(&quot;WeightedClusterPreview&quot;) ## Short preview in English</code></pre>
+<pre><code>## 
+## To cite WeightedCluster in publications please use:</code></pre>
+<pre><code>## Studer, Matthias (2013). WeightedCluster Library Manual: A</code></pre>
+<pre><code>##    practical guide to creating typologies of trajectories in the</code></pre>
+<pre><code>##    social sciences with R. LIVES Working Papers, 24. doi:</code></pre>
+<pre><code>##    10.12682/lives.2296-1658.2013.24</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">k0 &lt;-<span class="st"> </span><span class="dv">2</span>
+i0 &lt;-<span class="st"> </span><span class="kw">nrow</span>(LZX_data<span class="op">$</span>data_acc)
+l0 &lt;-<span class="st"> </span><span class="kw">nrow</span>(LZX_data<span class="op">$</span>data_exp)
+p0 &lt;-<span class="st"> </span><span class="kw">ncol</span>(LZX_data<span class="op">$</span>data_exp)
+po &lt;-<span class="st"> </span><span class="dv">500</span>
+
+##atac
+acc &lt;-<span class="st"> </span><span class="kw">cor</span>(<span class="kw">t</span>(LZX_data<span class="op">$</span>data_acc),<span class="dt">method=</span><span class="st">'spearman'</span>)
+pam.res_acc &lt;-<span class="st"> </span><span class="kw">wcKMedoids</span>(<span class="dv">1</span><span class="op">-</span>acc, <span class="dt">k=</span>k0, <span class="dt">weights=</span><span class="kw">rep</span>(<span class="dv">1</span>, i0),<span class="dt">npass =</span> <span class="dv">100</span>)
+acc_md &lt;-<span class="st"> </span>pam.res_acc<span class="op">$</span>clustering
+acc_kmd &lt;-<span class="st"> </span><span class="kw">unique</span>(acc_md)
+acc_kmd_ct &lt;-<span class="st"> </span>LZX_data<span class="op">$</span>data_acc[acc_kmd,]
+
+##rna
+expn &lt;-<span class="st"> </span><span class="kw">cor</span>(<span class="kw">t</span>(LZX_data<span class="op">$</span>data_exp),<span class="dt">method=</span><span class="st">'spearman'</span>)
+pam.res_expn &lt;-<span class="st"> </span><span class="kw">wcKMedoids</span>(<span class="dv">1</span><span class="op">-</span>expn, <span class="dt">k=</span>k0, <span class="dt">weights=</span><span class="kw">rep</span>(<span class="dv">1</span>, l0),<span class="dt">npass =</span> <span class="dv">100</span>)
+expn_md &lt;-<span class="st"> </span>pam.res_expn<span class="op">$</span>clustering
+expn_kmd &lt;-<span class="st"> </span><span class="kw">unique</span>(expn_md)
+expn_kmd_ct &lt;-<span class="st"> </span>LZX_data<span class="op">$</span>data_exp[expn_kmd,]
+
+## match cluster centers for atac and rna by larger correlation
+ct_corr &lt;-<span class="st"> </span><span class="kw">cor</span>(<span class="kw">t</span>(acc_kmd_ct),<span class="kw">t</span>(expn_kmd_ct))
+ct_corr</code></pre></div>
+<pre><code>##                       X2         X2
+## SRX859637.bam 0.27453116 0.03757058
+## SRX860342.bam 0.08071982 0.10934335</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">accpam &lt;-<span class="st"> </span>acc_md
+accpam[accpam<span class="op">==</span>acc_kmd[<span class="dv">1</span>]] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="co"># cluster 1 in atac</span>
+accpam[accpam<span class="op">==</span>acc_kmd[<span class="dv">2</span>]] &lt;-<span class="st"> </span><span class="dv">2</span> <span class="co"># cluster 2 in atac</span>
+
+exppam &lt;-<span class="st"> </span>expn_md
+exppam[exppam<span class="op">==</span>expn_kmd[<span class="dv">1</span>]] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="co"># cluster 1 in rna</span>
+exppam[exppam<span class="op">==</span>expn_kmd[<span class="dv">2</span>]] &lt;-<span class="st"> </span><span class="dv">2</span> <span class="co"># cluster 2 in rna</span></code></pre></div>
+</div>
+<div id="b-using-k-medoids-clustering-results-as-the-initializations-of-em-algorithm" class="section level4">
+<h4>(b) Using K-Medoids clustering results as the initializations of EM Algorithm</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(scACE)
+
+<span class="co"># f1 and f0</span>
+f1 &lt;-<span class="st"> </span>(LZX_data<span class="op">$</span>data_acc<span class="op">!=</span><span class="dv">0</span>) <span class="op">+</span><span class="st"> </span><span class="dv">0</span>
+f0 &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>f1
+
+<span class="co"># g1 and g0</span>
+data_exp &lt;-<span class="st"> </span>LZX_data<span class="op">$</span>data_exp
+data_exp_non0 &lt;-<span class="st"> </span>data_exp[<span class="kw">which</span>(data_exp<span class="op">!=</span><span class="dv">0</span>)]
+<span class="cf">if</span> (<span class="kw">length</span>(data_exp_non0)<span class="op">&gt;</span><span class="dv">50000</span>){
+  data_exp_non0 &lt;-<span class="st"> </span><span class="kw">sample</span>(data_exp_non0, <span class="dv">50000</span>)
+}
+data_exp_non0 &lt;-<span class="st"> </span><span class="kw">log</span>(data_exp_non0 <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)
+fit &lt;-<span class="st"> </span><span class="kw">gammamixEM</span>(<span class="dt">x=</span>data_exp_non0, <span class="dt">k =</span> <span class="dv">2</span>, <span class="dt">epsilon=</span><span class="dv">2</span>, <span class="dt">verb=</span>F)</code></pre></div>
+<pre><code>## number of iterations= 31</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data_exp &lt;-<span class="st"> </span><span class="kw">log</span>(LZX_data<span class="op">$</span>data_exp<span class="op">+</span><span class="dv">1</span>)
+dens_scRNA_gg &lt;-<span class="st"> </span><span class="kw">cal_density_gg_thres</span>(<span class="dt">gg_fit=</span>fit, <span class="dt">data=</span>data_exp, <span class="dt">thres_low=</span><span class="op">-</span><span class="dv">1</span>, <span class="dt">thres_high=</span><span class="dv">20</span>)
+g1 &lt;-<span class="st"> </span>dens_scRNA_gg<span class="op">$</span>f1
+g0 &lt;-<span class="st"> </span>dens_scRNA_gg<span class="op">$</span>f0
+
+<span class="co"># Initialization</span>
+cluster_acc_Ini &lt;-<span class="st"> </span>accpam
+cluster_exp_Ini &lt;-<span class="st"> </span>exppam
+u_acc_tilda_Ini &lt;-<span class="st"> </span><span class="ot">NULL</span>
+v_exp_tilda_Ini &lt;-<span class="st"> </span><span class="ot">NULL</span>
+omega_acc_Ini &lt;-<span class="st"> </span><span class="ot">NULL</span>
+omega_exp_Ini &lt;-<span class="st"> </span><span class="ot">NULL</span>
+qi &lt;-<span class="st"> </span><span class="ot">NULL</span> <span class="co">#qi</span>
+ql &lt;-<span class="st"> </span><span class="ot">NULL</span> <span class="co">#ql</span>
+pi_exp &lt;-<span class="st"> </span><span class="ot">NULL</span>
+phi_atac &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">/</span>k0,<span class="dv">1</span><span class="op">/</span>k0)
+phi_rna &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">/</span>k0,<span class="dv">1</span><span class="op">/</span>k0)
+phi_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="dv">10</span>
+po &lt;-<span class="st"> </span><span class="dv">500</span>
+
+<span class="co"># z_acc</span>
+<span class="cf">if</span> (<span class="kw">is.null</span>(cluster_acc_Ini)){
+  cluster_acc_Ini &lt;-<span class="st"> </span><span class="kw">sample</span>(nCluster, <span class="kw">nrow</span>(f1), <span class="dt">replace=</span>T)
+  z_acc &lt;-<span class="st"> </span><span class="kw">expandCluster</span>(cluster_acc_Ini)
+} <span class="cf">else</span> {
+  z_acc &lt;-<span class="st"> </span><span class="kw">expandCluster</span>(cluster_acc_Ini)
+}
+
+<span class="co"># z_exp</span>
+<span class="cf">if</span> (<span class="kw">is.null</span>(cluster_exp_Ini)){
+  cluster_exp_Ini &lt;-<span class="st"> </span><span class="kw">sample</span>(nCluster, <span class="kw">nrow</span>(g1), <span class="dt">replace=</span>T)
+  z_exp &lt;-<span class="st"> </span><span class="kw">expandCluster</span>(cluster_exp_Ini)
+} <span class="cf">else</span> {
+  z_exp &lt;-<span class="st"> </span><span class="kw">expandCluster</span>(cluster_exp_Ini)
+}
+
+
+<span class="co"># u_acc_tilda</span>
+<span class="cf">if</span> (<span class="kw">is.null</span>(u_acc_tilda_Ini)){
+  u_acc_tilda &lt;-<span class="st"> </span><span class="kw">get_v_Ini</span>(f1, f0, <span class="fl">0.5</span>)
+} <span class="cf">else</span> {
+  u_acc_tilda &lt;-<span class="st"> </span>u_acc_tilda_Ini
+}
+
+<span class="co"># v_exp_tilda</span>
+<span class="cf">if</span> (<span class="kw">is.null</span>(v_exp_tilda_Ini)){
+  v_exp_tilda &lt;-<span class="st"> </span><span class="kw">get_v_Ini</span>(g1, g0, <span class="fl">0.5</span>)
+} <span class="cf">else</span> {
+  v_exp_tilda &lt;-<span class="st"> </span>v_exp_tilda_Ini
+}
+
+<span class="co"># omega_acc</span>
+  <span class="cf">if</span> (<span class="kw">is.null</span>(omega_acc_Ini)){
+    omega_acc &lt;-<span class="st"> </span><span class="kw">get_omega_Ini</span>(u_acc_tilda, cluster_acc_Ini)
+    omega_acc &lt;-<span class="st"> </span>omega_acc<span class="op">/</span><span class="kw">max</span>(omega_acc)
+    omega_acc[<span class="kw">which</span>(omega_acc<span class="op">&lt;=</span><span class="fl">0.05</span>)] &lt;-<span class="st"> </span><span class="fl">0.05</span>
+    omega_acc[<span class="kw">which</span>(omega_acc<span class="op">&gt;=</span><span class="fl">0.95</span>)] &lt;-<span class="st"> </span><span class="fl">0.95</span>  
+  } <span class="cf">else</span> {
+    omega_acc &lt;-<span class="st"> </span>omega_acc_Ini
+  }
+  
+  <span class="co"># omega_exp</span>
+  <span class="cf">if</span> (<span class="kw">is.null</span>(omega_exp_Ini)){
+    omega_exp &lt;-<span class="st"> </span><span class="kw">get_omega_Ini</span>(v_exp_tilda, cluster_exp_Ini)
+    omega_exp &lt;-<span class="st"> </span>omega_exp<span class="op">/</span><span class="kw">max</span>(omega_exp)
+    omega_exp[<span class="kw">which</span>(omega_exp<span class="op">&lt;=</span><span class="fl">0.05</span>)] &lt;-<span class="st"> </span><span class="fl">0.05</span>
+    omega_exp[<span class="kw">which</span>(omega_exp<span class="op">&gt;=</span><span class="fl">0.95</span>)] &lt;-<span class="st"> </span><span class="fl">0.95</span>  
+  } <span class="cf">else</span> {
+    omega_exp &lt;-<span class="st"> </span>omega_exp_Ini
+  }
+
+
+<span class="co"># qi</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">is.null</span>(qi)){
+  qi &lt;-<span class="st"> </span>qi
+} <span class="cf">else</span> {
+  qi &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="kw">nrow</span>(f1))
+}
+
+<span class="co"># ql</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">is.null</span>(ql)){
+  ql &lt;-<span class="st"> </span>ql
+} <span class="cf">else</span> {
+  ql &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="kw">nrow</span>(g1))
+}
+
+<span class="co"># pi_exp</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">is.null</span>(pi_exp)){
+  pi_exp &lt;-<span class="st"> </span>pi_exp
+} <span class="cf">else</span> {
+  pi_exp &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="fl">0.3</span>, <span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">ncol=</span><span class="kw">nrow</span>(g1))
+  pi_exp[<span class="dv">1</span>,] &lt;-<span class="st"> </span><span class="fl">0.8</span>
+}</code></pre></div>
+</div>
+<div id="c-run-em-algorithm-for-the-model-based-approach" class="section level4">
+<h4>(c) Run EM algorithm for the model-based approach</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">niter &lt;-<span class="st"> </span><span class="dv">500</span>
+temp &lt;-<span class="st"> </span><span class="kw">update_all2</span>(<span class="dt">phi_atac=</span>phi_atac,<span class="dt">f1=</span>f1,<span class="dt">f0=</span>f0,<span class="dt">w_acc=</span>omega_acc,
+                    <span class="dt">phi_rna=</span>phi_rna,<span class="dt">g1=</span>g1,<span class="dt">g0=</span>g0,<span class="dt">w_exp=</span>omega_exp,<span class="dt">pi_exp=</span>pi_exp,
+                    <span class="dt">qi=</span>qi,<span class="dt">ql=</span>ql,<span class="dt">phi_1=</span>phi_<span class="dv">1</span>,<span class="dt">po=</span>po)
+initialpostprob &lt;-<span class="st"> </span>temp<span class="op">$</span>postprob
+
+postprob &lt;-<span class="st"> </span><span class="kw">c</span>()
+<span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>niter)){
+  temp&lt;-<span class="kw">update_all2</span>(<span class="dt">phi_atac=</span>temp<span class="op">$</span>phi_atac,<span class="dt">f1=</span>f1,<span class="dt">f0=</span>f0,<span class="dt">w_acc=</span>temp<span class="op">$</span>w_acc,
+                    <span class="dt">phi_rna=</span>temp<span class="op">$</span>phi_rna,<span class="dt">g1=</span>g1,<span class="dt">g0=</span>g0,<span class="dt">w_exp=</span>temp<span class="op">$</span>w_exp,<span class="dt">pi_exp=</span>temp<span class="op">$</span>pi_exp,
+                    <span class="dt">qi=</span>temp<span class="op">$</span>qi,<span class="dt">ql=</span>temp<span class="op">$</span>ql,<span class="dt">phi_1=</span>temp<span class="op">$</span>phi_<span class="dv">1</span>,<span class="dt">po=</span>po)
+  postprob &lt;-<span class="st"> </span><span class="kw">c</span>(postprob,temp<span class="op">$</span>postprob)
+  <span class="co">#print(i)</span>
+
+}</code></pre></div>
+</div>
+<div id="d-summary-clustering-result-using-result-from-k-medoids-as-benchmark" class="section level4">
+<h4>(d) Summary clustering result, using result from K-Medoids as benchmark</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(NMF)
+
+prob_z_atac&lt;-<span class="kw">calculate_prob_z_atac</span>(temp<span class="op">$</span>phi_atac,f1,f0,temp<span class="op">$</span>w_acc,temp<span class="op">$</span>qi)
+prob_z_rna&lt;-<span class="kw">calculate_prob_z_rna</span>(temp<span class="op">$</span>phi_rna,g1,g0,temp<span class="op">$</span>w_exp,temp<span class="op">$</span>pi_exp,temp<span class="op">$</span>ql,po)
+
+amp&lt;-<span class="kw">rep</span>(<span class="dv">0</span>,i0)
+<span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>i0)){
+  amp[i]=<span class="kw">which.max</span>(prob_z_atac[i,])
+}
+rmp&lt;-<span class="kw">rep</span>(<span class="dv">0</span>,l0)
+<span class="cf">for</span>(l <span class="cf">in</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>l0)){
+  rmp[l]=<span class="kw">which.max</span>(prob_z_rna[l,])
+}
+
+
+<span class="co"># ATAC clustering result</span>
+<span class="kw">table</span>(accpam,amp) <span class="co"># contingency table</span></code></pre></div>
+<pre><code>##       amp
+## accpam   1   2
+##      1 217   3
+##      2   5  89</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">purity</span>(<span class="kw">as.factor</span>(amp),<span class="kw">as.factor</span>(accpam)) <span class="co"># purity for measuring accuracy</span></code></pre></div>
+<pre><code>## [1] 0.9745223</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RNA clustering result</span>
+<span class="kw">table</span>(exppam,rmp)</code></pre></div>
+<pre><code>##       rmp
+## exppam  1  2
+##      1 42  0
+##      2  0 54</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">purity</span>(<span class="kw">as.factor</span>(rmp),<span class="kw">as.factor</span>(exppam))</code></pre></div>
+<pre><code>## [1] 1</code></pre>
+</div>
+</div>
+<div id="simdata" class="section level3">
+<h3>2.3 <code>simData</code></h3>
+<p>Simulate both single-cell chromatin accessibility and single-cell gene expression data for 2 clusters by model-based approach.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(scACE)
+n1 &lt;-<span class="st"> </span><span class="dv">100</span>
+n2 &lt;-<span class="st"> </span><span class="dv">100</span>
+p &lt;-<span class="st"> </span><span class="dv">100</span>
+Xprobs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)
+muG1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>)
+sigmaG1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span>)
+muG2 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>)
+sigmaG2 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span>)
+overlap_prop &lt;-<span class="st"> </span><span class="fl">0.8</span>
+diff_prop &lt;-<span class="st"> </span><span class="fl">0.2</span>
+diff_prop_atac &lt;-<span class="st"> </span><span class="fl">0.001</span>
+diff_prop_rna &lt;-<span class="st"> </span><span class="fl">0.001</span>
+
+mu0 &lt;-<span class="st"> </span><span class="fl">0.5</span>
+mu1 &lt;-<span class="st"> </span><span class="fl">0.5</span>
+nu0 &lt;-<span class="st"> </span><span class="dv">2</span>
+nu1 &lt;-<span class="st"> </span><span class="dv">10</span>
+q_acc &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.5</span>, n1)
+q_exp &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.5</span>, n2)
+pi_exp &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">rep</span>(<span class="fl">0.7</span>, n2), <span class="fl">0.1</span>)
+
+simdata &lt;-<span class="st"> </span><span class="kw">simData</span>(<span class="dt">n1=</span>n1, <span class="dt">n2=</span>n2, <span class="dt">p=</span>p, <span class="dt">Xprobs=</span>Xprobs, 
+                    <span class="dt">muG1=</span>muG1, <span class="dt">sigmaG1=</span>sigmaG1, <span class="dt">muG2=</span>muG2, <span class="dt">sigmaG2=</span>sigmaG2,
+                    <span class="dt">mu0=</span>mu0, <span class="dt">mu1=</span>mu1, <span class="dt">nu0=</span>nu0, <span class="dt">nu1=</span>nu1, 
+                    <span class="dt">q_acc=</span>q_acc, <span class="dt">q_exp=</span>q_exp, <span class="dt">pi_exp=</span>pi_exp,            
+                    <span class="dt">overlap_prop=</span>overlap_prop, <span class="dt">diff_prop=</span>diff_prop, 
+                    <span class="dt">diff_prop_atac=</span>diff_prop_atac, 
+                    <span class="dt">diff_prop_rna=</span>diff_prop_rna, <span class="dt">cutoff=</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, 
+                    <span class="dt">high1=</span><span class="fl">0.8</span>, <span class="dt">low1=</span><span class="fl">0.2</span>, <span class="dt">high2=</span><span class="fl">0.8</span>, <span class="dt">low2=</span><span class="fl">0.2</span>)
+
+<span class="co"># the simulated dataset</span>
+data_acc &lt;-<span class="st"> </span>simdata<span class="op">$</span>Data_atac
+data_exp &lt;-<span class="st"> </span>simdata<span class="op">$</span>Data_rna
+<span class="co"># the simulated cluster assignment</span>
+acc_true_cluster &lt;-<span class="st"> </span>simdata<span class="op">$</span>cluster_atac
+exp_true_cluster &lt;-<span class="st"> </span>simdata<span class="op">$</span>cluster_rna
+<span class="co"># linked features</span>
+overlap_seq_acc &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span><span class="op">:</span>(p<span class="op">*</span>overlap_prop))
+overlap_seq_exp &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span><span class="op">:</span>(p<span class="op">*</span>overlap_prop))</code></pre></div>
+</div>
+</div>
+<div id="reference" class="section level2">
+<h2>3, Reference</h2>
+<p>Lin Z, Zamanighomi M, Daley T, Ma S and Wong WH(2019). “Model-based approach to the joint analysis of single-cell data on chromatin accessibility and gene expression.” Statistical Science.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
