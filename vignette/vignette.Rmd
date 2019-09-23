@@ -1,0 +1,296 @@
+---
+title: "A quick guide to scACE"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A quick guide to scACE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1, Installation
+Using the following command to install scACE:
+
+``` r
+library(devtools)
+devtools::install_github("cuhklinlab/scACE")
+```
+
+## 2, Example 
+A breif illustration to the three main functions.
+
+### 2.1 `getClusterGibbs` 
+Perform clustering on the dataset `LZX_data` using MCMC, which contains 314 chromatin accessibility data and 96 gene expression data. 1000 features are used, in which first 500 features are linked.
+
+```{r}
+library(mixtools)
+library(label.switching)
+library(scACE)
+library(NMF)
+
+fulldata <- LZX_data
+data_acc <- fulldata$data_acc
+data_exp <- fulldata$data_exp
+overlap_seq_acc <- fulldata$overlap_seq_acc
+overlap_seq_exp <- fulldata$overlap_seq_exp
+acc_true_cluster <- fulldata$acc_true_cluster
+exp_true_cluster <- fulldata$exp_true_cluster
+result <- getClusterGibbs(data_acc=data_acc, data_exp=data_exp, 
+                          overlap_seq_acc=overlap_seq_acc, 
+                          overlap_seq_exp=overlap_seq_exp,nCluster=2,niter=1000)
+```
+
+Clustering result can also be summarized.
+```{r}
+acclb <- result$cluster_acc
+explb <- result$cluster_exp
+lb <- c(acclb,explb)
+true_cluster <- c(acc_true_cluster,exp_true_cluster)
+# contingency table
+table(true_cluster,lb)
+# purity for measuring accuracy
+purity(as.factor(lb),as.factor(true_cluster))
+
+```
+
+
+### 2.2 `update_all2` 
+Perform clustering on the dataset `LZX_data` using EM algorithm, which contains 314 chromatin accessibility data and 96 gene expression data. 1000 features are used, in which first 500 features are linked.
+
+#### (a) Run K-medoids to have a quick clustering on the dataset
+```{r}
+library(cluster)
+
+##atac
+acc <- cor(t(LZX_data$data_acc),method='spearman')
+pam.res_acc <- pam(1-acc, 2, metric = "euclidean", stand = FALSE)
+acc_md <- pam.res_acc$medoids
+acc_md <- t(acc_md)
+
+##rna
+expn <- cor(t(LZX_data$data_exp),method='spearman')
+pam.res_expn <- pam(1-expn, 2, metric = "euclidean", stand = FALSE)
+expn_md <- pam.res_expn$medoids
+expn_md <- t(expn_md)
+
+accpam <- pam.res_acc$clustering
+exppam <- pam.res_expn$clustering
+```
+
+#### (b) Using K-Medoids clustering results as the initializations of EM Algorithm
+```{r}
+library(scACE)
+
+k0 <- 2
+i0 <- nrow(LZX_data$data_acc)
+l0 <- nrow(LZX_data$data_exp)
+p0 <- ncol(LZX_data$data_exp)
+po <- 500
+
+# f1 and f0
+f1 <- (LZX_data$data_acc!=0) + 0
+f0 <- 1 - f1
+
+# g1 and g0
+data_exp_non0 <- data_exp[which(LZX_data$data_exp!=0)]
+if (length(data_exp_non0)>50000){
+  data_exp_non0 <- sample(data_exp_non0, 50000)
+}
+data_exp_non0 <- log(data_exp_non0 + 1)
+fit <- gammamixEM(x=data_exp_non0, k = 2, epsilon=2, verb=F)
+data_exp <- log(LZX_data$data_exp+1)
+dens_scRNA_gg <- cal_density_gg_thres(gg_fit=fit, data=data_exp, thres_low=-1, thres_high=20)
+g1 <- dens_scRNA_gg$f1
+g0 <- dens_scRNA_gg$f0
+
+# Initialization
+cluster_acc_Ini <- accpam
+cluster_exp_Ini <- exppam
+u_acc_tilda_Ini <- NULL
+v_exp_tilda_Ini <- NULL
+omega_acc_Ini <- NULL
+omega_exp_Ini <- NULL
+qi <- NULL #qi
+ql <- NULL #ql
+pi_exp <- NULL
+phi_atac <- c(1/k0,1/k0)
+phi_rna <- c(1/k0,1/k0)
+phi_1 <- 10
+po <- 500
+
+# z_acc
+if (is.null(cluster_acc_Ini)){
+  cluster_acc_Ini <- sample(nCluster, nrow(f1), replace=T)
+  z_acc <- expandCluster(cluster_acc_Ini)
+} else {
+  z_acc <- expandCluster(cluster_acc_Ini)
+}
+
+# z_exp
+if (is.null(cluster_exp_Ini)){
+  cluster_exp_Ini <- sample(nCluster, nrow(g1), replace=T)
+  z_exp <- expandCluster(cluster_exp_Ini)
+} else {
+  z_exp <- expandCluster(cluster_exp_Ini)
+}
+
+
+# u_acc_tilda
+if (is.null(u_acc_tilda_Ini)){
+  u_acc_tilda <- get_v_Ini(f1, f0, 0.5)
+} else {
+  u_acc_tilda <- u_acc_tilda_Ini
+}
+
+# v_exp_tilda
+if (is.null(v_exp_tilda_Ini)){
+  v_exp_tilda <- get_v_Ini(g1, g0, 0.5)
+} else {
+  v_exp_tilda <- v_exp_tilda_Ini
+}
+
+# omega_acc
+  if (is.null(omega_acc_Ini)){
+    omega_acc <- get_omega_Ini(u_acc_tilda, cluster_acc_Ini)
+    omega_acc <- omega_acc/max(omega_acc)
+    omega_acc[which(omega_acc<=0.05)] <- 0.05
+    omega_acc[which(omega_acc>=0.95)] <- 0.95  
+  } else {
+    omega_acc <- omega_acc_Ini
+  }
+  
+  # omega_exp
+  if (is.null(omega_exp_Ini)){
+    omega_exp <- get_omega_Ini(v_exp_tilda, cluster_exp_Ini)
+    omega_exp <- omega_exp/max(omega_exp)
+    omega_exp[which(omega_exp<=0.05)] <- 0.05
+    omega_exp[which(omega_exp>=0.95)] <- 0.95  
+  } else {
+    omega_exp <- omega_exp_Ini
+  }
+
+
+# qi
+if (!is.null(qi)){
+  qi <- qi
+} else {
+  qi <- rep(0.5, nrow(f1))
+}
+
+# ql
+if (!is.null(ql)){
+  ql <- ql
+} else {
+  ql <- rep(0.5, nrow(g1))
+}
+
+# pi_exp
+if (!is.null(pi_exp)){
+  pi_exp <- pi_exp
+} else {
+  pi_exp <- matrix(0.3, nrow=2, ncol=nrow(g1))
+  pi_exp[1,] <- 0.8
+}
+
+```
+
+
+#### (c) Run EM algorithm for the model-based approach
+```{r}
+niter <- 500
+temp <- update_all2(phi_atac=phi_atac,f1=f1,f0=f0,w_acc=omega_acc,
+                    phi_rna=phi_rna,g1=g1,g0=g0,w_exp=omega_exp,pi_exp=pi_exp,
+                    qi=qi,ql=ql,phi_1=phi_1,po=po)
+initialpostprob <- temp$postprob
+
+postprob <- c()
+for(i in c(1:niter)){
+  temp<-update_all2(phi_atac=temp$phi_atac,f1=f1,f0=f0,w_acc=temp$w_acc,
+                    phi_rna=temp$phi_rna,g1=g1,g0=g0,w_exp=temp$w_exp,pi_exp=temp$pi_exp,
+                    qi=temp$qi,ql=temp$ql,phi_1=temp$phi_1,po=po)
+  postprob <- c(postprob,temp$postprob)
+
+}
+
+```
+
+#### (d) Compare result of K-Medoids and Model-based approach using EM algorithm
+```{r}
+library(NMF)
+
+prob_z_atac<-calculate_prob_z_atac(temp$phi_atac,f1,f0,temp$w_acc,temp$qi)
+prob_z_rna<-calculate_prob_z_rna(temp$phi_rna,g1,g0,temp$w_exp,temp$pi_exp,temp$ql,po)
+
+amp<-rep(0,i0)
+for(i in c(1:i0)){
+  amp[i]=which.max(prob_z_atac[i,])
+}
+rmp<-rep(0,l0)
+for(l in c(1:l0)){
+  rmp[l]=which.max(prob_z_rna[l,])
+}
+
+
+# ATAC clustering result
+table(accpam,amp) # contingency table
+purity(as.factor(amp),as.factor(accpam)) # purity for measuring accuracy
+
+# RNA clustering result
+table(exppam,rmp)
+purity(as.factor(rmp),as.factor(exppam))
+
+```
+
+
+
+### 2.3 `simData`
+Simulate both single-cell chromatin accessibility and single-cell gene expression data for 2 clusters by model-based approach.
+```{r}
+library(scACE)
+n1 <- 100
+n2 <- 100
+p <- 100
+Xprobs <- c(0.5, 0.5)
+muG1 <- c(0, 2)
+sigmaG1 <- c(0.8, 0.8)
+muG2 <- c(0, 2)
+sigmaG2 <- c(0.8, 0.8)
+overlap_prop <- 0.8
+diff_prop <- 0.2
+diff_prop_atac <- 0.001
+diff_prop_rna <- 0.001
+
+mu0 <- 0.5
+mu1 <- 0.5
+nu0 <- 2
+nu1 <- 10
+q_acc <- rep(0.5, n1)
+q_exp <- rep(0.5, n2)
+pi_exp <- rbind(rep(0.7, n2), 0.1)
+
+simdata <- simData(n1=n1, n2=n2, p=p, Xprobs=Xprobs, 
+                    muG1=muG1, sigmaG1=sigmaG1, muG2=muG2, sigmaG2=sigmaG2,
+                    mu0=mu0, mu1=mu1, nu0=nu0, nu1=nu1, 
+                    q_acc=q_acc, q_exp=q_exp, pi_exp=pi_exp,            
+                    overlap_prop=overlap_prop, diff_prop=diff_prop, 
+                    diff_prop_atac=diff_prop_atac, 
+                    diff_prop_rna=diff_prop_rna, cutoff=10^-6, 
+                    high1=0.8, low1=0.2, high2=0.8, low2=0.2)
+
+# the simulated dataset
+data_acc <- simdata$Data_atac
+data_exp <- simdata$Data_rna
+# the simulated cluster assignment
+acc_true_cluster <- simdata$cluster_atac
+exp_true_cluster <- simdata$cluster_rna
+# linked features
+overlap_seq_acc <- seq(1:(p*overlap_prop))
+overlap_seq_exp <- seq(1:(p*overlap_prop))
+
+```
+
+## 3, Reference
+Lin Z, Zamanighomi M, Daley T, Ma S and Wong WH(2019). "Model-based approach to the joint analysis of single-cell data on chromatin accessibility and gene expression." Statistical Science.
