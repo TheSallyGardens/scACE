@@ -34,4 +34,4 @@ devtools::install_github("WWJiaxuan/scACE")
 
 
 ## Example
-Please refer to the [vigenette](https://github.com/Van1yu3/SWKM/tree/master/doc) with two examples for a quick guide to scACE package.
+Please refer to the [vigenette](https://https://github.com/cuhklinlab/scACE/tree/master/vignette) with several examples for a quick guide to scACE package.
