@@ -2,7 +2,7 @@
 \alias{getClusterGibbs}
 \title{getClusterGibbs}
 \description{
-A model-based approach that is specifically designed for single-cell genomic data and can jointly cluster single-cell chromatin accessibility and single-cell gene expression data.
+A model-based approach with Markov Chain Monte Carlo (MCMC) implementation that is specifically designed for single-cell genomic data and can jointly cluster single-cell chromatin accessibility and single-cell gene expression data.
 }
 \usage{
 getClusterGibbs(data_acc, data_exp, overlap_seq_acc, overlap_seq_exp, mu0 = 0.5, mu1 = 0.5, nu0 = 2, nCluster, cluster_acc_Ini = NULL, cluster_exp_Ini = NULL, u_acc_tilda_Ini = NULL, v_exp_tilda_Ini = NULL, omega_acc_Ini = NULL, omega_exp_Ini = NULL, nu1_Ini = 1, q_acc_Ini = NULL, q_exp_Ini = NULL, pi_exp_Ini = NULL, niter, quiet = F, eval_logPost = F)
