@@ -2,7 +2,7 @@ Package: scACE
 Type: Package
 Title: Model-based approach to the joint analysis of single-cell data on chromatin accessibility and gene expression
 Version: 0.1.0
-Author: person("Zhixiang", "Lin", email = "linzx06@gmail.com", role = c("aut", "cre")), person("Jiang", "Huang", email = "HuangJing_Megan@zju.edu.cn", role = c("cre"))
+Author: person("Zhixiang", "Lin", email = "linzx06@gmail.com", role = c("aut", "cre")), person("Jinwen", "Yang", email = "16300180021@fudan.edu.cn", role = c("aut", "cre")), person("Jiang", "Huang", email = "HuangJing_Megan@zju.edu.cn", role = c("cre"))
 Description: Single-Cell chromatin Accessibility and gene Expression-based Clustering. A model-based approach that is specifically designed for single-cell genomic data and can jointly cluster single-cell chromatin accessibility and single-cell gene expression data.
 License: GPL-2
 Encoding: UTF-8
