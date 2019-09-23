@@ -21,9 +21,11 @@ Main Functions
 
 `getClusterGibbs`: Perform model-based clustering algorithm on single-cell genomic data, jointly clustering single-cell chromatin accessibility and single-cell gene expression data.
 
+`update_all2`: Perform model-based clustering algorithm on single-cell genomic data using expectation–maximization (EM) algorithm, jointly clustering sc-ATAC and sc-RNA data.
+
 `simData`: Simulate single-cell genomic data by model-based approach, including single-cell chromatin accessibility and single-cell gene expression data for 2 clusters.
 
 Example
 -------
 
-Please refer to the [vigenette](https://github.com/WWJiaxuan/scACE/tree/master/vignette) with two examples for a quick guide to scACE package.
+Please refer to the [vigenette](https://github.com/WWJiaxuan/scACE/tree/master/vignette) with several examples for a quick guide to scACE package.
