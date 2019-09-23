@@ -26,7 +26,9 @@ devtools::install_github("WWJiaxuan/scACE")
 
 ## Main Functions
 
-`getClusterGibbs`: Perform model-based clustering algorithm on single-cell genomic data, jointly clustering single-cell chromatin accessibility and single-cell gene expression data.
+`getClusterGibbs`: Perform model-based clustering algorithm on single-cell genomic data using Markov Chain Monte Carlo (MCMC), jointly clustering single-cell chromatin accessibility (sc-ATAC) and single-cell gene expression (sc-RNA) data.
+
+`update_all2`: Perform model-based clustering algorithm on single-cell genomic data using expectation–maximization (EM) algorithm, jointly clustering sc-ATAC and sc-RNA data.
 
 `simData`: Simulate single-cell genomic data by model-based approach, including single-cell chromatin accessibility and single-cell gene expression data for 2 clusters.
 
